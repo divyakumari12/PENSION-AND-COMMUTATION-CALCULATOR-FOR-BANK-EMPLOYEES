@@ -1,0 +1,103 @@
+from tkinter import *
+from tkinter import messagebox
+from PIL import ImageTk, Image
+
+
+inputs = ('Basic Pay','Provident fund','special pay','stagnation pay','graduation pay','Service Years','Age next Birthday','Commuted Percentage')
+
+def pension(entries):   
+
+    service_years=33-float(entries['Service Years'].get())   
+
+    if int(entries['Service Years'].get())<10:
+        pension=0                                                
+        messagebox.showerror("Error Messege", "Error! Service Years cannot be less than 10 years")
+    
+    elif int(entries['Service Years'].get())>33:
+        pension=(float(entries['Basic Pay'].get())+float(entries['Provident fund'].get())+float(entries['special pay'].get())+float(entries['stagnation pay'].get())+float(entries['graduation pay'].get()))/2
+        messagebox.showinfo("Result", "Your Pension Amount is " +str(pension))   
+       
+    else:
+        
+        pension=(float(entries['Basic Pay'].get())+float(entries['Provident fund'].get())+float(entries['special pay'].get())+float(entries['stagnation pay'].get())+float(entries['graduation pay'].get()))/2
+        pension=pension-(service_years*3.03035)
+        messagebox.showinfo("Result", "Your Pension Amount is " +str(pension))   
+
+
+   
+def commutation(entries):         
+    user_age=int(entries['Service Years'].get())-61                   
+    service_years=33-int(entries['Service Years'].get())              
+    if int(entries['Service Years'].get())<10:
+        pension=0
+
+    else:
+        pension=(float(entries['Basic Pay'].get())+float(entries['Provident fund'].get())+float(entries['special pay'].get())+float(entries['stagnation pay'].get())+float(entries['graduation pay'].get()))/2
+        pension=pension-(service_years*3.03035)
+    commuatation_percentage=entries['Commuted Percentage'].get()     
+    commuatation_percentage=float(commuatation_percentage)
+
+    if commuatation_percentage>=33.33:
+        commutation= float(pension*33.33)/100
+
+    else:
+        commutation= float(pension*commuatation_percentage)/100                         
+    commutation_factor=9.81  
+                                                  
+    final_commutation_factor=commutation_factor-(user_age*0.3297)              
+    commutation_value =commutation*final_commutation_factor*12       
+    commutation=int(commutation)
+    commutation_value=int(commutation_value)
+    new_pension=pension-commutation                            
+    new_pension=int(new_pension)
+    messagebox.showinfo("Result", "Commutation Amount is: " +str(commutation))
+   
+
+def pensionfields(root, fields):             
+   entries = {}
+   for field in fields:
+      row = Frame(root)  
+      row.pack(fill = X, padx = 5 , pady = 5)                  
+      my_label2 = Label(row, width=22, text=field+": ", anchor='w',font=("arial",12))  
+      my_label2.pack(side = LEFT,pady=5,padx=5)           
+      enter = Entry(row,font=(8))                               
+      enter.insert(0," ")
+      enter.pack(side = RIGHT,fill=X, expand = 1)
+      entries[field] = enter
+   return entries
+
+if __name__ == '__main__':
+   root = Tk()             
+   root.title("Pension and Commutation Calculator")
+   root.geometry("800x600")
+   my_label=Label(root,text='Pension and Commutation Calculator for Bank employees',font=(16))
+   my_label.pack()
+
+   #Icon
+   root.iconbitmap(r"C:\Users\Lenovo\anaconda3\Lib\site-packages\future\moves\dbm\Iconsmind-Outline-Calculator-2.ico")
+
+   #Setting Background
+   root.configure(bg='white')
+
+   #Adding Image
+   upload= Image.open("calculator.jpg")
+   image=ImageTk.PhotoImage(upload)
+   label= Label(root,image=image,height = 500, width =400)
+   label.place(x=560,y=330)
+
+   
+     
+   entry = pensionfields(root, inputs)
+   
+   
+   #define Buttons
+   myButton1 = Button(root, text = 'Calculate Pension',font=(10),command=(lambda e=entry:pension(e)))
+   myButton1.pack(padx = 10, pady = 5)
+
+   myButton2 = Button(root, text='Calculate Commutation',font=(10),command=(lambda e=entry:commutation(e)))
+   myButton2.pack(padx = 10, pady = 5)
+   
+   myButton3 = Button(root, text = 'Exit',font=(10),command=root.quit)
+   myButton3.place(x = 736, y = 735)
+   
+   root.mainloop()
